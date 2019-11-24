@@ -1,6 +1,7 @@
 <launch>
     <arg name="simulation" default="false" />
     <arg name="robot_name" default="robot1" />
+    <arg name="is_boss" default="false" />
     <arg name="x_pos" default="0.00" />
     <arg name="y_pos" default="0.00" />
 
@@ -11,8 +12,10 @@
         <arg name="y_pos" value="$(arg y_pos)" />
     </include>
 
-    <include file="$(find soccerbot)/launch/modules/localization.launch">
-        <arg name="robot_name" value="$(arg robot_name)"/>
+    <include file="$(find soccerbot)/launch/modules/boss.launch" if="$(arg is_boss)" />
+
+    <include file="$(find soccerbot)/launch/modules/localization.launch" >
+            <arg name="robot_name" value="$(arg robot_name)" />
     </include>
     <!--<include file="$(find soccerbot)/launch/modules/navigation.launch" />-->
     <!--<include file="$(find soccerbot)/launch/modules/communication.launch" />-->

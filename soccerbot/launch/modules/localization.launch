@@ -7,23 +7,25 @@
     <!-- Map server -->
     <node name="map_server" pkg="map_server" type="map_server"
           args="$(find soccer_common)/maps/robocup.yaml">
-        <param name="frame_id" value="world"/>
+        <param name="frame_id" value="map"/>
     </node>
 
     <!-- Line and goal detection -->
-    <node pkg="soccer_fieldline_detection" type="soccer_fieldline_detector" name="soccer_fieldline_detector"
-          output="screen">
-        <rosparam file="$(find soccer_fieldline_detection)/config/fieldline_detection.yaml" command="load"/>
-    </node>
+    <!-- Insert the camera field line detection node -->
+    <!-- Create new node that
+    1. Subscribe from /darknet_ros/bounding_boxes
+    2. Find the center point
+    3. Run the 2d to 3d point thing
+    4. Publish the point with the reference frame being the robot's base_link
+     -->
 
-    <rosparam file="$(find soccer_fieldline_detection)/config/pointcloud_to_laserscan.yaml" command="load" />
-    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
-        <remap from="cloud_in" to="field_point_cloud" />
-    </node>
-
-    <!-- Ball Detection -->
+    <!-- TODO: NAM -->
+    <!-- create node for readking in the ball location from picture-->
+    <!-- based on dimension of the ball localize where the ball is -->
+    <!-- publish a message on the location of the ball-->
     <node name="ball_detector" pkg="soccer_fieldline_detection" type="ball_detector"/>
 
+    <!-- Start darknet and ros wrapper -->
     <rosparam command="load" ns="darknet_ros" file="$(find soccerbot)/config/darknet_ros.yaml"/>
     <rosparam command="load" ns="darknet_ros" file="$(find soccerbot)/config/yolov2-tiny.yaml"/>
     <rosparam ns="darknet_ros" param="subscribers/camera_reading/topic" subst_value="true" >/$(arg robot_name)/camera/image_raw</rosparam>
@@ -35,18 +37,40 @@
         <param name="config_path"           value="$(find darknet_ros)/yolo_network_config/cfg" />
     </node>
 
-    <!-- AMCL Localization -->
-    <node pkg="amcl" type="amcl" name="amcl">
-        <param name="update_min_d"      value="0.0" />
-        <param name="use_sim_time"      value="true" />
-        <param name="use_map_topic"     value="true"/>
-        <param name="scan_topic"        value="scan"/>
-        <param name="initial_pose_x"    value="0.0"/>
-        <param name="initial_pose_y"    value="0.0"/>
-        <param name="initial_pose_a"    value="0.0"/>
-        <param name="odom_frame_id"     value="/base_link"/>
-        <param name="base_frame_id"     value="/base_link"/>
-        <param name="global_frame_id"   value="/world"/>
+    <node name="$(arg robot_name)_estimate_0" pkg="rostopic" type="rostopic"
+          args="pub /$(arg robot_name)/estimate_pose/robot0 geometry_msgs/Pose
+          '{position: {x: 0.0, y: 0.0, z: 0.0},
+          orientation: {x: 0.0, y: 0.0, z: 0.0, w: 0.0}}' -r 2">
     </node>
+
+    <node name="$(arg robot_name)_estimate_1" pkg="rostopic" type="rostopic"
+          args="pub /$(arg robot_name)/estimate_pose/robot1 geometry_msgs/Pose
+          '{position: {x: 0.0, y: 0.0, z: 0.0},
+          orientation: {x: 0.0, y: 0.0, z: 0.0, w: 0.0}}' -r 2">
+    </node>
+
+    <node name="$(arg robot_name)_estimate_2" pkg="rostopic" type="rostopic"
+          args="pub /$(arg robot_name)/estimate_pose/robot2 geometry_msgs/Pose
+          '{position: {x: 0.0, y: 0.0, z: 0.0},
+          orientation: {x: 0.0, y: 0.0, z: 0.0, w: 0.0}}' -r 2">
+    </node>
+
+    <node name="$(arg robot_name)_estimate_3" pkg="rostopic" type="rostopic"
+          args="pub /$(arg robot_name)/estimate_pose/robot3 geometry_msgs/Pose
+          '{position: {x: 0.0, y: 0.0, z: 0.0},
+          orientation: {x: 0.0, y: 0.0, z: 0.0, w: 0.0}}' -r 2">
+    </node>
+
+    <!-- AMCL Localization -->
+<!--    <include file="$(find soccerbot)/launch/modules/amcl.launch">-->
+<!--        <arg name="use_map_topic"   value="true"/>-->
+<!--        <arg name="scan_topic"      value="vision_poses"/>-->
+<!--        <arg name="initial_pose_x"  value="0.0"/>-->
+<!--        <arg name="initial_pose_y"  value="0.0"/>-->
+<!--        <arg name="initial_pose_a"  value="0.0"/>-->
+<!--        <arg name="odom_frame_id"   value="odom"/>-->
+<!--        <arg name="base_frame_id"   value="base_link"/>-->
+<!--        <arg name="global_frame_id" value="map"/>-->
+<!--    </include>-->
 
 </launch>
