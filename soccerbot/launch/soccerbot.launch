@@ -26,5 +26,6 @@
         </include>
         <include file="$(find soccerbot)/launch/modules/navigation.launch" />
         <!--<include file="$(find soccerbot)/launch/modules/communication.launch" />-->
+        <include file="$(find soccerbot)/launch/modules/boss.launch" if="$(arg is_boss)"/>
     </group>
 </launch>
