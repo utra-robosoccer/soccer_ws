@@ -37,7 +37,7 @@
         <leg name="left" origin="torso" direction="1" />
         <leg name="right" origin="torso" direction="-1" />
         <head origin="torso" />
-        <imu origin="torso" />
+        <imu origin="torso" imu_frame="$(arg robot_name)" />
         <front_camera origin="head" />
 
         <gazebo>

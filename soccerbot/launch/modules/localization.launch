@@ -15,6 +15,7 @@
     <node pkg="soccer_fieldline_detection" type="soccer_fieldline_detector" name="soccer_fieldline_detector"
           output="screen">
         <rosparam file="$(find soccer_fieldline_detection)/config/fieldline_detection.yaml" command="load"/>
+        <param name="tf_namespace" value="$(arg robot_name)/" />
     </node>
 
     <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
@@ -23,7 +24,9 @@
     </node>
 
     <!-- Ball Detection -->
-    <node name="ball_detector" pkg="soccer_fieldline_detection" type="ball_detector"/>
+    <node name="ball_detector" pkg="soccer_fieldline_detection" type="ball_detector">
+        <param name="tf_namespace" value="$(arg robot_name)/" />
+    </node>
 
     <rosparam command="load" ns="darknet_ros" file="$(find soccerbot)/config/darknet_ros.yaml"/>
     <rosparam command="load" ns="darknet_ros" file="$(find soccerbot)/config/yolov2-tiny.yaml"/>
@@ -39,6 +42,7 @@
     <!-- Complementary filter -->
     <node pkg="imu_complementary_filter" type="complementary_filter_node" name="imu_complementary_filter">
         <rosparam file="$(find soccerbot)/config/imu_complementary_filter.yaml" command="load" />
+        <param name="fixed_frame" value="$(arg robot_name)/odom" />
         <remap from="imu/data_raw" to="imu_raw" />
         <remap from="imu/data" to="imu" />
     </node>
@@ -46,6 +50,8 @@
     <!-- IMU location -->
     <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
         <rosparam file="$(find soccerbot)/config/robot_pose_ekf.yaml" command="load" />
+        <param name="output_frame" value="$(arg robot_name)/odom" />
+        <param name="base_footprint_frame" value="$(arg robot_name)/base_footprint" />
         <remap from="robot_pose_ekf/odom_combined" to="odom_combined" />
         <remap from="imu_data" to="imu" />
     </node>
@@ -53,6 +59,8 @@
     <!-- AMCL Localization -->
     <node pkg="amcl" type="amcl" name="amcl">
         <rosparam file="$(find soccerbot)/config/amcl.yaml" command="load" />
+        <rosparam param="odom_frame_id" subst_value="true" >$(arg robot_name)/odom</rosparam>
+        <rosparam param="base_frame_id" subst_value="true" >$(arg robot_name)/base_camera</rosparam>
     </node>
 
    <!-- Static publisher for odom
@@ -60,7 +68,7 @@
 
 -->
     <node pkg="rostopic" type="rostopic" name="odom_broadcaster"
-    args="pub /robot1/odom nav_msgs/Odometry
+    args="pub /$(arg robot_name)/odom nav_msgs/Odometry
         '{header: {seq: 0, stamp: { secs: 0, nsecs: 0}, frame_id: 'odom'},child_frame_id: 'base_footprint',
         pose:
           {pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0}},

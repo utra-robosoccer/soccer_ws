@@ -17,6 +17,8 @@ class SoccerFieldlineDetector {
     ros::Publisher point_cloud_publisher;
     std::unique_ptr<Camera> camera;
 
+    std::string tf_namespace;
+
     int cannythreshold1 = 200;
     int cannythreshold2 = 400;
 
@@ -32,6 +34,7 @@ class SoccerFieldlineDetector {
     tf2_ros::TransformBroadcaster br;
 public:
     ros::NodeHandle nh;
+    ros::NodeHandle priv_nh;
 
     SoccerFieldlineDetector();
 

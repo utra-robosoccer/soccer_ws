@@ -8,7 +8,7 @@
 #include <sensor_msgs/point_cloud2_iterator.h>
 #include <tf/transform_listener.h>
 
-SoccerFieldlineDetector::SoccerFieldlineDetector() : tfListener(tfBuffer){
+SoccerFieldlineDetector::SoccerFieldlineDetector() : priv_nh("~"), tfListener(tfBuffer){
     image_transport::ImageTransport it(nh);
     image_subscriber = it.subscribe("camera/image_raw", 1, &SoccerFieldlineDetector::imageCallback, this);
     point_cloud_publisher = SoccerFieldlineDetector::nh.advertise<sensor_msgs::PointCloud2> ("field_point_cloud",1);
@@ -16,21 +16,23 @@ SoccerFieldlineDetector::SoccerFieldlineDetector() : tfListener(tfBuffer){
     image_publisher = it.advertise("camera/line_image",1);
 
     // Parameters
-    nh.getParam("soccer_fieldline_detector/cannythreshold1", cannythreshold1);
-    nh.getParam("soccer_fieldline_detector/cannythreshold2", cannythreshold2);
+    priv_nh.getParam("tf_namespace", tf_namespace);
 
-    nh.getParam("soccer_fieldline_detector/houghRho", rho);
-    nh.getParam("soccer_fieldline_detector/houghTheta", theta);
-    nh.getParam("soccer_fieldline_detector/houghThreshold", threshold);
-    nh.getParam("soccer_fieldline_detector/houghMinLineLength", minLineLength);
-    nh.getParam("soccer_fieldline_detector/houghMaxLineGap", maxLineGap);
+    priv_nh.getParam("cannythreshold1", cannythreshold1);
+    priv_nh.getParam("cannythreshold2", cannythreshold2);
+
+    priv_nh.getParam("houghRho", rho);
+    priv_nh.getParam("houghTheta", theta);
+    priv_nh.getParam("houghThreshold", threshold);
+    priv_nh.getParam("houghMinLineLength", minLineLength);
+    priv_nh.getParam("houghMaxLineGap", maxLineGap);
 
     // Initialize Camera
     geometry_msgs::TransformStamped camera_pose;
 
     while(ros::ok()) {
         try{
-            camera_pose = tfBuffer.lookupTransform("camera", "base_footprint",
+            camera_pose = tfBuffer.lookupTransform(tf_namespace + "camera", tf_namespace + "base_footprint",
                                                    ros::Time(0), ros::Duration(1.0));
             break;
         }
@@ -63,7 +65,7 @@ void SoccerFieldlineDetector::imageCallback(const sensor_msgs::ImageConstPtr &ms
     // Get transformation
     geometry_msgs::TransformStamped camera_pose;
     try{
-        camera_pose = tfBuffer.lookupTransform("base_footprint", "camera",
+        camera_pose = tfBuffer.lookupTransform(tf_namespace + "base_footprint", tf_namespace + "camera",
                                                ros::Time(0), ros::Duration(0.1));
 
         Pose3 camera_position;
@@ -133,7 +135,7 @@ void SoccerFieldlineDetector::imageCallback(const sensor_msgs::ImageConstPtr &ms
     sensor_msgs::PointCloud2 point_cloud_msg;
     //Setting up PointCloud2 msg
     point_cloud_msg.header.stamp = ros::Time::now();
-    point_cloud_msg.header.frame_id = "base_footprint";
+    point_cloud_msg.header.frame_id = tf_namespace + "base_footprint";
     point_cloud_msg.height = 1;
     point_cloud_msg.width = points3d.size();
     point_cloud_msg.is_bigendian = false;
@@ -165,10 +167,10 @@ void SoccerFieldlineDetector::imageCallback(const sensor_msgs::ImageConstPtr &ms
 
     geometry_msgs::TransformStamped camera_footprint;
     try {
-        camera_footprint = tfBuffer.lookupTransform( "camera","base_footprint",
+        camera_footprint = tfBuffer.lookupTransform( tf_namespace + "camera",tf_namespace + "base_footprint",
                                                ros::Time(0), ros::Duration(0.1));
-        camera_footprint.header.frame_id = "base_footprint";
-        camera_footprint.child_frame_id = "base_camera";
+        camera_footprint.header.frame_id = tf_namespace + "base_footprint";
+        camera_footprint.child_frame_id = tf_namespace + "base_camera";
         camera_footprint.header.stamp = msg->header.stamp;
         camera_footprint.header.seq = msg->header.seq;
 

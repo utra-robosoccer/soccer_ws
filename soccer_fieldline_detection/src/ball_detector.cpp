@@ -10,21 +10,26 @@
 class BallDetector {
 public:
     ros::NodeHandle n;
+    ros::NodeHandle priv_nh;
     ros::Subscriber darknet_pose_sub;
     ros::Publisher head_motor_0;
     std::unique_ptr<Camera> camera;
     tf2_ros::Buffer tfBuffer;
     tf2_ros::TransformListener tfListener;
     tf2_ros::TransformBroadcaster br;
+    std::string tf_namespace;
 
-    BallDetector() : tfListener(tfBuffer) {
+    BallDetector() : priv_nh("~"), tfListener(tfBuffer) {
+
+        priv_nh.getParam("tf_namespace", tf_namespace);
+
         darknet_pose_sub = n.subscribe("darknet_ros/bounding_boxes", 1000, &BallDetector::ballDetectorCallback, this);
 
         geometry_msgs::TransformStamped camera_pose;
 
         while (ros::ok()) {
             try {
-                camera_pose = tfBuffer.lookupTransform("camera", "base_footprint",
+                camera_pose = tfBuffer.lookupTransform(tf_namespace + "camera", tf_namespace + "base_footprint",
                                                        ros::Time(0), ros::Duration(1.0));
                 break;
             }
@@ -50,7 +55,7 @@ private:
         // Get transformation
         geometry_msgs::TransformStamped camera_pose;
         try {
-            camera_pose = tfBuffer.lookupTransform("base_footprint", "camera",
+            camera_pose = tfBuffer.lookupTransform(tf_namespace + "base_footprint", tf_namespace + "camera",
                                                    ros::Time(0), ros::Duration(0.1));
 
             Pose3 camera_position;
@@ -82,8 +87,8 @@ private:
             Point3 floor_coordinate = camera->FindFloorCoordinate(xavg, yavg);
 
             geometry_msgs::TransformStamped ball_pose;
-            ball_pose.header.frame_id = "base_footprint";
-            ball_pose.child_frame_id = "ball";
+            ball_pose.header.frame_id = tf_namespace + "base_footprint";
+            ball_pose.child_frame_id = tf_namespace + "ball";
             ball_pose.header.stamp = msg->header.stamp;
             ball_pose.header.seq = msg->header.seq;
             ball_pose.transform.translation.x = floor_coordinate.x;

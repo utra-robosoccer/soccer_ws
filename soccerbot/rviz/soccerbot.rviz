@@ -8,6 +8,8 @@ Panels:
         - /Status1
         - /Grid1/Offset1
         - /TF1/Frames1
+        - /RobotModel1
+        - /RobotModel1/Status1
         - /Localization1
         - /Localization1/AMCL Pose1
       Splitter Ratio: 0.4962962865829468
@@ -59,53 +61,55 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_camera:
+        robot1/ball:
           Value: true
-        base_footprint:
+        robot1/base_camera:
           Value: true
-        camera:
+        robot1/base_footprint:
           Value: true
-        head:
+        robot1/camera:
           Value: true
-        imu_link:
+        robot1/head:
           Value: true
-        left_ankle:
+        robot1/imu_link:
           Value: true
-        left_bicep:
+        robot1/left_ankle:
           Value: true
-        left_calve:
+        robot1/left_bicep:
           Value: true
-        left_foot:
+        robot1/left_calve:
           Value: true
-        left_forearm:
+        robot1/left_foot:
           Value: true
-        left_hip_front:
+        robot1/left_forearm:
           Value: true
-        left_hip_side:
+        robot1/left_hip_front:
           Value: true
-        left_thigh:
+        robot1/left_hip_side:
           Value: true
-        neck:
+        robot1/left_thigh:
           Value: true
-        odom:
+        robot1/neck:
           Value: true
-        right_ankle:
+        robot1/odom:
           Value: true
-        right_bicep:
+        robot1/right_ankle:
           Value: true
-        right_calve:
+        robot1/right_bicep:
           Value: true
-        right_foot:
+        robot1/right_calve:
           Value: true
-        right_forearm:
+        robot1/right_foot:
           Value: true
-        right_hip_front:
+        robot1/right_forearm:
           Value: true
-        right_hip_side:
+        robot1/right_hip_front:
           Value: true
-        right_thigh:
+        robot1/right_hip_side:
           Value: true
-        torso:
+        robot1/right_thigh:
+          Value: true
+        robot1/torso:
           Value: true
         world:
           Value: true
@@ -116,10 +120,39 @@ Visualization Manager:
       Show Names: true
       Tree:
         world:
-          odom:
-            base_footprint:
-              torso:
+          robot1/odom:
+            robot1/base_footprint:
+              robot1/ball:
                 {}
+              robot1/base_camera:
+                {}
+              robot1/torso:
+                robot1/imu_link:
+                  {}
+                robot1/left_bicep:
+                  robot1/left_forearm:
+                    {}
+                robot1/left_hip_side:
+                  robot1/left_hip_front:
+                    robot1/left_thigh:
+                      robot1/left_calve:
+                        robot1/left_ankle:
+                          robot1/left_foot:
+                            {}
+                robot1/neck:
+                  robot1/head:
+                    robot1/camera:
+                      {}
+                robot1/right_bicep:
+                  robot1/right_forearm:
+                    {}
+                robot1/right_hip_side:
+                  robot1/right_hip_front:
+                    robot1/right_thigh:
+                      robot1/right_calve:
+                        robot1/right_ankle:
+                          robot1/right_foot:
+                            {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -241,7 +274,7 @@ Visualization Manager:
           Value: true
       Name: RobotModel
       Robot Description: robot1/robot_description
-      TF Prefix: ""
+      TF Prefix: robot1
       Update Interval: 0
       Value: true
       Visual Enabled: true
