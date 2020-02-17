@@ -421,6 +421,8 @@ void StartCommandTask(void const * argument)
     // Unblock the other tasks now that initialization is done
     setup_is_done = true;
 
+    periph::motors[2]->setId(3);
+
     osSignalSet(RxTaskHandle, NOTIFIED_FROM_TASK);
     osSignalSet(TxTaskHandle, NOTIFIED_FROM_TASK);
     osSignalSet(MotorCmdGenTaskHandle, NOTIFIED_FROM_TASK);

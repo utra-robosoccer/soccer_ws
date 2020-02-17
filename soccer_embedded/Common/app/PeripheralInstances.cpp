@@ -89,7 +89,7 @@ DaisyChain lower_left_leg_daisy_chain(lower_left_leg_params);
 
 MX28 motor1(1, &lower_right_leg_daisy_chain);
 MX28 motor2(2, &lower_right_leg_daisy_chain);
-MX28 motor3(3, &lower_right_leg_daisy_chain);
+MX28 motor3(0xFE, &lower_right_leg_daisy_chain);
 MX28 motor4(4, &upper_right_leg_daisy_chain);
 MX28 motor5(5, &upper_right_leg_daisy_chain);
 MX28 motor6(6, &upper_right_leg_daisy_chain);
