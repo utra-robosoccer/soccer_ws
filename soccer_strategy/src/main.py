@@ -81,16 +81,16 @@ class Action:
         elif has_ball_tmp:
             self.walk = False
             # The real walking method
-            '''msg = geometry_msgs.msg.PoseStamped()
+            msg = geometry_msgs.msg.PoseStamped()
             msg.header.stamp = rospy.Time.now()
             msg.header.frame_id = 'world'
             msg.pose.position = state["state"].position
             msg.pose.orientation = state["state"].orientation
             self.move.publish(msg)
             while not self.walk:
-                rospy.sleep(0.1)'''
+                rospy.sleep(0.1)
             # Fake walking method
-            msg = ModelState()
+            '''msg = ModelState()
             msg.model_name = 'robot1'
             msg.pose.position = state["state"].position
             msg.pose.orientation = state["state"].orientation
@@ -120,9 +120,9 @@ class Action:
                 self.odom.publish(odometry)
 
             except rospy.ServiceException, e:
-                print "Service call failed: %s" % e
+                print "Service call failed: %s" % e'''
 
-            rospy.sleep(1)
+            #rospy.sleep(1)
         pass
 
 
