@@ -8,7 +8,7 @@ class Crotchpath(Footpath):
     crotch_zdiff_sway = 0.000
     crotch_sidediff_sway = -0.03
     crotch_sidediff_sway_decay = 5
-    crotch_thetadiff_sway = [0., 0., 0.] # [0, 0, 0.08]
+    crotch_thetadiff_sway =  [0, 0, 0.08]
 
     # Distort per step
     crotch_zdiff_step = 0.000

@@ -78,12 +78,18 @@ classdef robotpath < Geometry.crotchpath
             end
             
             subplot(3,2,2);
-            plot(times, squeeze(lfp(1,4,:)));
-            hold on;
-            plot(times, squeeze(rfp(1,4,:)));
-            plot(times, squeeze(crp(1,4,:)));
+            %plot(times, squeeze(lfp(1,4,:)));
+            %hold on;
+            %plot(times, squeeze(rfp(1,4,:)));
+            %plot(times, squeeze(crp(1,4,:)));
             
-            title('X position of left, right and body');
+            plot(times, squeeze(lfp(1,2,:)));
+            hold on;
+            plot(times, squeeze(rfp(1,2,:)));
+            plot(times, squeeze(crp(1,2,:)));
+            
+            % title('X position of left, right and body');
+            title('Test PLT');
             xlabel('time (t)');
             ylabel('Torso to feet (x)');
             grid off;
@@ -102,15 +108,15 @@ classdef robotpath < Geometry.crotchpath
             legend('Left','Right');
             
             subplot(3,2,4);
-            plot(times, squeeze(diff_right_foot(2,4,:)));
+            plot(times, squeeze(diff_right_foot(2,4,:)), '.');
             hold on;
-            plot(times, squeeze(diff_left_foot(2,4,:)));
+            plot(times, squeeze(diff_left_foot(2,4,:)), '.');
             title('Diff between feet and body');
             xlabel('time (t)');
             ylabel('Torso to feet (y)');
             grid off;
             grid minor;
-            legend('Left','Right'); % replace
+            legend('Right', 'Left'); % replace
 
             subplot(3,2,6);
             plot(times, squeeze(crp(3,4,:)));

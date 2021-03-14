@@ -79,9 +79,9 @@ class Robotpath(Crotchpath):
             i = i + 1
 
         plt.subplot(322)
-        plt.plot(times, lfp[0, 3, :].ravel(), label='Left')
-        plt.plot(times, rfp[0, 3, :].ravel(), label='Right')
-        plt.plot(times, crp[0, 3, :].ravel(), label='Crotch')
+        plt.plot(times, lfp[0, 3, :].ravel(), label='Left')#, linestyle='-', marker='o', ms=2)
+        plt.plot(times, rfp[0, 3, :].ravel(), label='Right')#, linestyle='-', marker='o', ms=2)
+        plt.plot(times, crp[0, 3, :].ravel(), label='Crotch')#, linestyle='-', marker='o', ms=2)
         plt.title('X position of left, right and body')
         plt.xlabel('time (t)')
         plt.ylabel('Torso to feet (x)')
@@ -98,8 +98,8 @@ class Robotpath(Crotchpath):
         plt.legend()
 
         plt.subplot(324)
-        plt.plot(times, diff_right_foot[1, 3, :].ravel(), label='Right')
-        plt.plot(times, diff_left_foot[1, 3, :].ravel(), label='Left')
+        plt.plot(times, diff_right_foot[1, 3, :].ravel(), label='Right')#, linestyle='', marker='.', ms=2)
+        plt.plot(times, diff_left_foot[1, 3, :].ravel(), label='Left')#, linestyle='', marker='.', ms=2)
         plt.title('Diff between feet and body')
         plt.xlabel('time (t)')
         plt.ylabel('Torso to feet (y)')
@@ -117,8 +117,8 @@ class Robotpath(Crotchpath):
         plt.legend()
         #plt.draw()
         fig.canvas.draw()
-        plt.show(block=False)
-        #plt.show()
+        #plt.show(block=False)
+        plt.show()
 
 
 

@@ -190,7 +190,7 @@ classdef footpath < Geometry.path
             [step_num, right_foot_step_ratio, left_foot_step_ratio] = footHeightRatio(obj, t);
             [right_foot_action, left_foot_action] = whatIsTheFootDoing(obj, step_num);
             
-            % Left foot
+            % Right foot
             if (length(right_foot_action) == 1)
                 tmp = obj.right_foot_position_at_step(right_foot_action);
                 right_foot_position = tmp.H;
@@ -201,8 +201,9 @@ classdef footpath < Geometry.path
                 right_foot_position = obj.parabolicPath(from, to, obj.step_height, ...
                     -obj.step_outwardness, -obj.step_rotation, right_foot_step_ratio);
             end
+            % disp(right_foot_position(2,4))
             
-            % Right foot
+            % Left foot
             if (length(left_foot_action) == 1)
                 tmp = obj.left_foot_position_at_step(left_foot_action);
                 left_foot_position = tmp.H;

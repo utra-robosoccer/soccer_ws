@@ -114,7 +114,7 @@ class Soccerbot:
         self.configuration[Links.RIGHT_LEG_1:Links.RIGHT_LEG_6+1] = thetas[0:6]
 
         # friction right leg
-        pb.changeDynamics(bodyUniqueId=self.body, linkIndex=Links.RIGHT_LEG_6, frictionAnchor=1, lateralFriction=1, rollingFriction=1, spinningFriction=1)
+        pb.changeDynamics(bodyUniqueId=self.body, linkIndex=Links.RIGHT_LEG_6, frictionAnchor=0, lateralFriction=1, rollingFriction=1, spinningFriction=1)
 
         # left leg
         left_foot_position = self.get_link_transformation(Links.TORSO, Links.LEFT_LEG_6)
@@ -124,7 +124,7 @@ class Soccerbot:
         self.configuration[Links.LEFT_LEG_1:Links.LEFT_LEG_6+1] = thetas[0:6]
 
         # friction left leg
-        pb.changeDynamics(bodyUniqueId=self.body, linkIndex=Links.LEFT_LEG_6, frictionAnchor=1, lateralFriction=1, rollingFriction=1, spinningFriction=1)
+        pb.changeDynamics(bodyUniqueId=self.body, linkIndex=Links.LEFT_LEG_6, frictionAnchor=0, lateralFriction=1, rollingFriction=1, spinningFriction=1)
 
         self.torso_offset = tr()
         self.rpy_current = [0, 0, 0] #TODO: is this the right init?
@@ -243,11 +243,13 @@ class Soccerbot:
         positions = self.configuration
 
         links = list(range(0,18,1))
-        pb.setJointMotorControlArray(bodyIndex=self.body, controlMode=pb.POSITION_CONTROL, jointIndices=links, targetPositions=positions)#, targetVelocities= [100] * 18)
+        #pb.setJointMotorControlArray(bodyIndex=self.body, controlMode=pb.POSITION_CONTROL, jointIndices=links, targetPositions=positions)#, targetVelocities= [100] * 18)
+        pb.setJointMotorControlArray(bodyIndex=self.body, controlMode=pb.POSITION_CONTROL, jointIndices=links,
+                                     targetPositions=[0] * 18)  # , targetVelocities= [100] * 18)
 
     def stepPath(self, t):
 
-        # timers missing
+        assert(t <= self.robot_path.duration())
         crotch_position = self.robot_path.crotchPosition(t) @ self.torso_offset
 
         [right_foot_position, left_foot_position] = self.robot_path.footPosition(t)
@@ -329,3 +331,63 @@ class Soccerbot:
             fig.canvas.draw()
             #plt.show(block=False)
             plt.show()
+
+
+    def step_sim(self, sim_time_step, initial=0):
+        """
+        This function sets the motor angles and must be called in the main loop along with the simulation step function.
+        NOTE: This function is written as a generator! Use like this:
+
+            obj = step_sim(...)
+
+            while True:
+                next(obj) # goes through the next trajectory if enough time has passed
+                simulator_step() # physics simulator step function
+
+        :param sim_time_step: The step time by which the physics simulator moves forward in time, unit: seconds
+        :param initial: The index of the angles trajectories from which the robot starts replaying
+        :return: None
+        """
+        duration_from_step_elapsed = 0
+        wallclock = 0
+        i = initial
+        links = list(range(0, 18, 1))
+
+        # initial angles
+        data = self.angles[i][1]
+        pb.setJointMotorControlArray(bodyIndex=self.body, controlMode=pb.POSITION_CONTROL, jointIndices=links,
+                                     targetPositions=data)  # , targetVelocities= [18] * 5)
+        i = i + 1
+        yield "I"
+        duration_from_step_elapsed = duration_from_step_elapsed + sim_time_step
+
+        while True:
+            while i < len(self.angles): #for data in self.angles:
+                while duration_from_step_elapsed < self.period:
+                    #print("Waiting at " + str(wallclock))
+                    yield "W" # wait for the step time of the data to pass
+                    duration_from_step_elapsed = duration_from_step_elapsed + sim_time_step
+                    wallclock = wallclock + sim_time_step
+                #set joints
+                data = self.angles[i][1]
+                pb.setJointMotorControlArray(bodyIndex=self.body, controlMode=pb.POSITION_CONTROL, jointIndices=links,
+                                             targetPositions=data, targetVelocities= [5] * 18)
+                i = i + 1
+                #print("Set Joints " + str(i) + " at " + str(wallclock))
+                duration_from_step_elapsed = duration_from_step_elapsed - self.period
+                yield "S" # set the angles, then exit
+                duration_from_step_elapsed = duration_from_step_elapsed + sim_time_step
+                wallclock = wallclock + sim_time_step
+            #print("Loop repeating")
+            yield "R" # repeat the loop
+            i = 0
+
+
+
+
+
+
+
+
+
+

@@ -191,7 +191,7 @@ class Footpath(Path):
         [step_num, right_foot_step_ratio, left_foot_step_ratio] = self.footHeightRatio(t)
         [right_foot_action, left_foot_action] = self.whatIsTheFootDoing(step_num)
 
-        # Left foot
+        # Right foot
         if len(right_foot_action) == 1:
             right_foot_position = self.right_foot_position_at_step(right_foot_action[0])
         else:
@@ -199,9 +199,9 @@ class Footpath(Path):
             _to = self.right_foot_position_at_step(right_foot_action[1])
 
             right_foot_position = self.parabolicPath(_from, _to, self.step_height, -self.step_outwardness, -self.step_rotation, right_foot_step_ratio)
+        #print(right_foot_position[1,3])
 
-
-        # Right foot
+        # Left foot
         if len(left_foot_action) == 1:
             left_foot_position = self.left_foot_position_at_step(left_foot_action[0])
         else:
@@ -209,7 +209,10 @@ class Footpath(Path):
             _to = self.left_foot_position_at_step(left_foot_action[1])
 
             left_foot_position = self.parabolicPath(_from, _to, self.step_height, self.step_outwardness, self.step_rotation, left_foot_step_ratio)
-
+        r_str = np.array2string(np.array(right_foot_position), formatter={'float_kind': '{0:.3f}'.format})
+        l_str = np.array2string(np.array(left_foot_position), formatter={'float_kind': '{0:.3f}'.format})
+        #print(str(t) + '\n' + r_str + '\n' + 'x'*50 + '\n' + l_str)
+        #print('c' * 50)
         return [right_foot_position, left_foot_position]
 
     def parabolicPath(self, startTransform, endTransform, zdiff, sidediff, rotdiff, ratio):

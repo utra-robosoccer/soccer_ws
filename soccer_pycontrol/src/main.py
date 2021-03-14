@@ -13,40 +13,44 @@ def main():
 
     pb.connect(pb.GUI)
     pb.setAdditionalSearchPath(pybullet_data.getDataPath())  # optionally
-    soccerbot = Soccerbot([0, 0, 0], useFixedBase=True)
+    soccerbot = Soccerbot([0, 0, 0], useFixedBase=False)
     ramp = Ramp("plane.urdf", (0, 0, 0), (0, 0, 0))  # change where the plane is lol ymes NO this will make things much harder in the future, move the robot not the floor
     pb.resetDebugVisualizerCamera(cameraDistance=0.5, cameraYaw=0, cameraPitch=0, cameraTargetPosition=[0, 0, 0.1])
     pb.setGravity(0, 0, -9.81)
     t1 = time.perf_counter()
     soccerbot.stand()
-    soccerbot.getPath(Transformation([0.3, 0, 0]), show=False)
+    soccerbot.getPath(Transformation([0.3, 0, 0]), show=True)
     t2 = time.perf_counter()
     print("duration: " + str(t2 - t1))
-    # soccerbot.calculate_angles(show=False)
+    soccerbot.calculate_angles(show=True)
 
-    pb_step = 0.004
 
-    for i in range(100):
-        sleep(pb_step)
+    startup = True
+    warmup = True
+    # Step through simulation
+    if startup:
+        for i in range(100):
+            sleep(0.004)
+            pb.stepSimulation()
+        print("Startup done")
+
+
+    #step = soccerbot.step_sim(0.004) #true speed
+    step = soccerbot.step_sim(sim_time_step=0.004, initial=0)
+
+    if warmup:
+        #next(step)
+        for i in range(100):
+            sleep(0.004)
+            pb.stepSimulation()
+        print("Warmup done")
+
+
+    while (1):
+        sleep(0.004)
+        #sleep(0.01)
         pb.stepSimulation()
-    print("Robot Stabilized")
-
-
-    for i in range(100):
-        sleep(pb_step)
-        pb.stepSimulation()
-    print("Robot ready for movement")
-
-    t = 0
-    while True:
-        if t >= soccerbot.current_step_time:
-            soccerbot.stepPath(t)
-            pb.setJointMotorControlArray(bodyIndex=soccerbot.body, controlMode=pb.POSITION_CONTROL, jointIndices=list(range(0, 18, 1)), targetPositions=soccerbot.configuration, targetVelocities= [1] * 18)
-            soccerbot.current_step_time = soccerbot.current_step_time + soccerbot.robot_path.step_size
-
-        pb.stepSimulation()
-        t = t + pb_step
-        sleep(pb_step)
+        next(step)
 
 if __name__ == '__main__':
     main()
