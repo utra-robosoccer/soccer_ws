@@ -2,13 +2,8 @@
 
 import os
 import subprocess
-import sys
-
 import rospkg
 import rospy
-
-import argparse
-
 from soccer_webots.webots_supervisor_controller import SupervisorController
 
 rospack = rospkg.RosPack()
@@ -27,7 +22,7 @@ arguments = [os.path.join(os.environ['WEBOTS_HOME'], 'webots'),
 sim_proc = subprocess.Popen(arguments)
 
 rospy.init_node("webots_ros_supervisor", argv=['clock:=/clock'])
-rospy.set_param("/webots_pid" , str(sim_proc.pid))
+rospy.set_param("/webots_pid", str(sim_proc.pid))
 
 os.environ["WEBOTS_PID"] = str(sim_proc.pid)
 os.environ["WEBOTS_ROBOT_NAME"] = "supervisor_robot"

@@ -79,6 +79,7 @@ class RobotController:
             i: rospy.Publisher(base_ns + "/foot_pressure_{}".format(i), Marker, queue_size=10) for i in range(8)}
 
 
+
         # publish camera info once, it will be latched
         self.cam_info = CameraInfo()
         self.cam_info.header.stamp = rospy.Time.from_seconds(self.time)

@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 from controller import Robot, Node, Supervisor
-import os
 import rospy
-from geometry_msgs.msg import Quaternion, PointStamped, Pose, Point, Twist
-from gazebo_msgs.msg import ModelStates
-
 from rosgraph_msgs.msg import Clock
-
 
 
 G = 9.81

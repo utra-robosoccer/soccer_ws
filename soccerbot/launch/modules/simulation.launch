@@ -32,4 +32,8 @@
             right_arm_motor_1
             "/>
 
+    <node pkg="soccer_webots" type="start_single.py" name="webots_ros_interface" output="screen"
+          args="--robot_name $(arg robot_name) ">
+    </node>
+
 </launch>
